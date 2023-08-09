@@ -1,0 +1,282 @@
+-- Question 1 --
+-- return all of the products 
+-- name 
+-- unit price 
+-- new price(unit price *1.1) 
+
+select name, unit_price, unit_price * 1.1 as new_price
+from products;
+
+-- Question 2 --
+-- get the orders placed this year 
+select * from orders
+where order_date >= '2019-01-01';
+
+-- Question 3 --
+-- from the order_items table, get the items
+-- from order #6
+-- where the total price is greater than 30
+select * from order_items
+where order_id = 6 AND unit_price * quantity > 30;
+
+-- Question 4 --
+-- return products with
+-- quantity in stock equal to 49, 38, 72
+select * from products
+where quantity_in_stock in (49,38,72);
+
+-- Question 5 --
+-- return customers born
+-- 					between 1/1/1990 and 1/1/2000
+select * from customers 
+where birth_date BETWEEN '1990-01-01' AND '2000-01-01';
+
+-- Question 6 --
+-- get the customers whose
+-- 	addresses contain TRAIL or AVENUE
+-- 	phone numbers end with 9
+select * from customers
+where address LIKE '%TRAIL%' OR address like '%AVENUE%';  
+
+select * from customers
+where phone LIKE '%9';
+
+-- Question 7 --
+-- get the customers whose
+-- first names are ELKA or AMBUR
+-- last name end with EY or ON
+-- last name start with MY or contains SE
+-- last name contain B followed by R or U 
+select * from customers
+where first_name REGEXP 'elka|ambur';
+
+select * from customers
+where last_name REGEXP 'ey|on$';
+
+select * from customers
+where last_name REGEXP '^my|se';
+
+select * from customers
+where first_name REGEXP 'br|bu';
+
+-- Question 8 --
+-- get the orders that are not shipped
+select * from orders where shipper_id is null;
+
+-- Question 9 --
+-- get the order item where order id is 2
+select *
+where order_id = 2
+order by  quantity * unit_price desc;
+
+select *, quantity * unit_price as total_price from order_items
+where order_id = 2
+order by  total_price desc;
+
+-- Question 10 --
+-- Get the top three loyal customers --
+select * from customers order by points desc limit 3;
+
+-- Question 11 --
+-- The show table at order_id, product_id, quantity, and unit_price --
+-- now u must be write query and join this table --
+-- setp 1 --
+select *
+from order_items oi
+join products p
+on oi.product_id = p.product_id;
+
+-- step 2 --
+select order_id, oi.product_id, quantity, oi.unit_price
+from  order_items oi 
+join products p  
+on oi.product_id  = p.product_id;
+
+-- Question 12 --
+-- we have sql_invoicing bases data facture --
+-- they have clients, invoices, payment_methods, and payments --
+use sql_invoicing;
+
+select * from
+payments p
+join clients c
+	on p.client_id = c.client_id
+join payment_methods pm
+	on p.payment_method = pm.payment_method_id; 
+
+select 
+	p.date,
+    p.invoice_id,
+    p.amount,
+    c.name,
+    pm.name
+from payments p
+join clients c
+	on p.client_id = c.client_id
+join payment_methods pm
+	on p.payment_method = pm.payment_method_id; 
+    
+-- Question 13 --
+-- on this table order item, the product_id no. 7 doesn't have order but still have quantity --
+-- is the result zero or is there a quantity? make the outer join --
+select * from
+products p
+left join order_items oi
+	on p.product_id = oi.product_id;
+    
+select  
+	p.product_id,
+    p.name,
+    oi.quantity
+from
+products p
+left join order_items oi
+	on p.product_id = oi.product_id;
+-- The answer is quantity still null for product_id 7 --
+
+-- Question 14 --
+-- you have to write query with result on the table --
+-- order date, order id, first name, shipper, and status --
+select 
+	o.order_id,
+    o.order_date,
+    c.first_name as customer,
+    sh.name as shipper
+from orders o
+join customers c
+	on o.customer_id = c.customer_id
+ join shippers sh
+	on o.shipper_id = sh.shipper_id;
+
+select 
+	o.order_id,
+    o.order_date,
+    c.first_name as customer,
+    sh.name as shipper,
+    os.name as status
+from orders o
+join customers c
+	on o.customer_id = c.customer_id
+ join shippers sh
+	on o.shipper_id = sh.shipper_id
+join order_statuses os
+	on o.status = os.order_status_id;
+
+-- Question 15 --
+-- we have the table with contain --
+-- date, cliennt, amount, and name --
+-- so, who has already made a payment by what method and when? --
+use sql_invoicing;
+
+select 
+	p.date,
+    c.name as client,
+    p.amount,
+    pm.name as payment_method
+from payments p
+join clients c using (client_id)
+join payment_methods pm
+	on p.payment_method = pm.payment_method_id;
+    
+-- Question 16 --
+-- Do a cross join between shippers and products --
+-- using the implicit syntax --
+-- and thenn using the explicit syntax --
+select  
+	sh.name as shipper,
+    p.name as product
+from shippers sh, products p
+order by sh.name;
+
+select  
+	sh.name as shipper,
+    p.name as product
+from shippers sh
+cross join products p
+order by sh.name;
+
+-- Question 17 --
+-- we have 4 column of table --
+-- customer id, first nam, points, and type --
+-- if there are points less than 2000 get bronze, above 2000 get silver and above 3000 gold, then make the category in order of points --
+select 
+	customer_id,
+    first_name, 
+    points,
+    'Bronze' as type
+from customers 
+where points < 2000
+union
+select 
+	customer_id,
+    first_name, 
+    points,
+    'Silver' as type
+from customers 
+where points between 2000 and 3000
+union 
+select 
+	customer_id,
+    first_name, 
+    points,
+    'Gold' as type
+from customers 
+where points > 3000
+order by first_name;
+
+-- Question 18 --
+-- insert three rows in the products table --
+insert into products (name, quantity_in_stock, unit_price)
+values ('Product1', 10, 1.95),
+	   ('Product2', 11, 1.95),
+	   ('Product3', 12, 1.95);
+
+-- Question 19 --
+-- The table contains columns for invoice id, number, client id, invoice total and payment total. --
+-- make a copy and put a new table called invoice archive --
+use sql_invoicing;
+
+select * from invoices i
+join clients c
+	using (client_id);
+create table invoice_archived as
+select 
+	i.invoice_id,
+    i.number,
+    c.name as client,
+    i.invoice_total,
+    i.payment_total,
+    i.invoice_date,
+    i.payment_date,
+    i.due_date
+from invoices i
+join clients c
+	using (client_id)
+where payment_date is not null;
+
+-- Question 20 --
+-- Write a SQL statement to --
+-- give any customers born before 1990 --
+-- 50 extra points --
+use sql_store;
+
+update customers 
+set points = points + 50
+where birth_date < '1990-01-01';
+
+-- Question 21 --
+-- -- database in the order table there is a comment column --
+-- that is not filled. try to update the comment or order --
+-- for customers over 3000 points -- 
+-- find customers over 3000 points --
+use sql_store;
+select * from customers where points > 3000;
+
+update orders
+set comments = 'Gold Customer'
+where customer_id in
+			(select customer_id 
+            from customers 
+            where points > 3000);
+
+-- end ---
