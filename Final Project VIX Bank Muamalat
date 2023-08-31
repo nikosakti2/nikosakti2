@@ -1,0 +1,25 @@
+--   USING BY BIGQUERY GOOGLE --
+--   Make a Primary Key --
+--   Orders Table --
+
+select * from `bi-muamalat-2022.My_Project.order`;
+
+alter table bi-muamalat-2022.Orders.Orders add primary key(OrderID) NOT ENFORCED;
+
+-- Product Category Table --
+
+select * from `bi-muamalat-2022.Final_Task.ProductCategory`;
+
+alter table bi-muamalat-2022.ProductCategory.ProductCategory add primary key(CategoryID) NOT ENFORCED;
+
+-- Customers Table --
+
+select * from `bi-muamalat-2022.Final_Task.Customers`;
+
+alter table bi-muamalat-2022.Customers.Customers add primary key(CustomerID) NOT ENFORCED;
+
+-- Products Table --
+
+select * from `bi-muamalat-2022.Final_Task.Products`;
+
+alter table bi-muamalat-2022.Products.Products add primary key(ProdNumber) NOT ENFORCED;
